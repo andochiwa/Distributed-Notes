@@ -2,6 +2,7 @@ package com.github.service;
 
 import com.github.bean.UserAddress;
 import org.apache.dubbo.config.annotation.DubboReference;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
@@ -15,7 +16,7 @@ import java.util.List;
  * @version 1.0
  * @create 03-14-1:38
  */
-//@Service
+@Service
 public class OrderServiceImpl implements OrderService{
 
     // @Autowired

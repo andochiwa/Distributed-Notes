@@ -14,6 +14,7 @@
     <dubbo:protocol name="dubbo" port="20880"/>
 
     <!--4.暴露服务 ref指向服务的实现对象-->
+    <!--提供方version 指定版本-->
     <dubbo:service interface="com.github.service.UserService" ref="userServiceImpl"/>
 
     <bean class="com.github.service.UserServiceImpl" id="userServiceImpl"/>

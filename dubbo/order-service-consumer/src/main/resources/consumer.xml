@@ -10,7 +10,13 @@
     <dubbo:registry address="zookeeper://localhost:2181"/>
 
     <!--声明需要调用的远程服务接口，生成远程服务代理-->
+    <!--timeout 超时时间 默认1000-->
+    <!--retries 重试次数 一般配合timeout使用，0代表不重试-->
+    <!--幂等（设置重试次数），非幂等（不设置）-->
+    <!--消费方version 指定用哪个版本-->
     <dubbo:reference interface="com.github.service.UserService" id="userService"/>
 
-    
+    <!--配置当前消费者统一规则，所有服务都不检查提供者-->
+    <dubbo:consumer check="false"/>
+
 </beans>
