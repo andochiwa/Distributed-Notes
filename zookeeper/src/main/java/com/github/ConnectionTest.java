@@ -1,6 +1,7 @@
 package com.github;
 
 import org.apache.zookeeper.*;
+import org.apache.zookeeper.data.Stat;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -62,6 +63,12 @@ public class ConnectionTest {
 
     }
 
-
+    // 判断节点是否存在
+    @Test
+    void nodeIsExist() throws KeeperException, InterruptedException {
+        Stat exists = zooKeeper.exists("/nihao", false);
+        System.out.println("===========exists=============");
+        System.out.println(exists);
+    }
 
 }
