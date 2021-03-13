@@ -1,0 +1,7 @@
+dubbo:
+  application:
+    name: order-service-consumer
+  registry:
+    address: zookeeper://localhost:2181
+server:
+  port: 8081

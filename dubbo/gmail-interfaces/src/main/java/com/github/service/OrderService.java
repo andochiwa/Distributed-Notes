@@ -1,5 +1,9 @@
 package com.github.service;
 
+import com.github.bean.UserAddress;
+
+import java.util.List;
+
 /**
  *
  * @author HAN
@@ -8,6 +12,6 @@ package com.github.service;
  */
 public interface OrderService {
 
-    public void initOrder(String userId);
+    public List<UserAddress> initOrder(String userId);
 
 }
