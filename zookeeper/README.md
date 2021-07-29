@@ -47,3 +47,26 @@ Zookeeper 可以实现监控节点状态变化，可以将节点信息写入到 
 ### 4.5 软负载均衡
 
 在 Zookeeper 中记录每台服务器的访问数，可以让访问数最少的服务去处理最新的客户端请求
+
+# Zookeeper 安装
+
+## 1. 本地、集群安装
+
+用 docker-compose，又快又方便~
+
+```bash
+docker-compose up -d
+```
+
+## 2. 配置文件参数
+
+LF：Leader and Follower
+
+```bash
+tickTime=2000   # Zookeeper服务器与客户端的通信心跳时间，单位毫秒
+initLimit=10    # LF初始通信时限
+syncLimit=5     # LF同步通信时限
+dataDir:        # 保存Zookeeper中的数据
+clientPort=2181 # 客户端连接端口，通常不做修改
+```
+
