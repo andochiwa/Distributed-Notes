@@ -131,6 +131,14 @@ clientPort=2181 # 客户端连接端口，通常不做修改
 
 # 2. ZNode 节点数据信息
 
-1. czxid: 创建节点的事务id。每次修改都会产生一个事务id，有次序关系。
+1. cZxid: 创建节点的事务id。每次修改都会产生一个事务id，有次序关系。
 2. ctime: ZNode 被创建的毫秒数（从 1970 年开始）
-3. 
+3. mZxid: ZNode 最后更新的事务 Zxid
+4. mtime: ZNode 最后修改的毫秒数
+5. pZxid: ZNode 最后更新的子节点 Zxid
+6. cversion: ZNode 子节点变化号，ZNode 子节点修改次数
+7. dataVersion: ZNode 数据变化号
+8. aclVersion: 访问控制列表的变化号
+9. ephemeralOwner: 如果是临时节点，则为 ZNode 拥有者的 session id。如果不是则为 0
+10. dataLength: ZNode 的数据长度
+11. numChildren: ZNode 子节点数量
