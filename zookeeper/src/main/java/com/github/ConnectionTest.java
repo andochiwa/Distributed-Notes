@@ -1,6 +1,9 @@
 package com.github;
 
-import org.apache.zookeeper.*;
+import org.apache.zookeeper.CreateMode;
+import org.apache.zookeeper.KeeperException;
+import org.apache.zookeeper.ZooDefs;
+import org.apache.zookeeper.ZooKeeper;
 import org.apache.zookeeper.data.Stat;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -21,24 +24,23 @@ public class ConnectionTest {
     void testConnection() throws IOException {
 
         // 访问ip和端口号，如果有多个则逗号隔开
-        String connectionString = "localhost:2181";
+        String connectionString = "localhost:2181,localhost:2182,localhost:2183";
         // 超时时间(ms)
         int sessionTimeout = 2000;
 
-        zooKeeper = new ZooKeeper(connectionString, sessionTimeout, new Watcher() {
-            @Override
-            public void process(WatchedEvent watchedEvent) {
-                // 监听器
-                List<String> children = null;
-                try {
-                    children = zooKeeper.getChildren("/", true);
-                    children.forEach(System.out::println);
-                } catch (KeeperException | InterruptedException e) {
-                    e.printStackTrace();
-                }
+        zooKeeper = new ZooKeeper(connectionString, sessionTimeout,
+                watchedEvent -> {
+                    System.out.println("watchedEvent: " + watchedEvent);
+                    try {
+                        // 监听器
+                        System.out.println("===============listener==============");
+                        List<String> children = zooKeeper.getChildren("/", true);
+                        children.forEach(System.out::println);
+                    } catch (KeeperException | InterruptedException e) {
+                        e.printStackTrace();
+                    }
 
-            }
-        });
+                });
         System.out.println(zooKeeper);
     }
 
@@ -46,8 +48,9 @@ public class ConnectionTest {
     @Test
     void createNode() throws KeeperException, InterruptedException {
         // 路径，内容，模式，类型
-        String path = zooKeeper.create("/ma", "wo".getBytes(), ZooDefs.Ids.OPEN_ACL_UNSAFE,
+        String path = zooKeeper.create("/hello", "world".getBytes(), ZooDefs.Ids.OPEN_ACL_UNSAFE,
                 CreateMode.PERSISTENT);
+        System.out.println("=========created node==================");
         System.out.println(path);
     }
 
@@ -57,16 +60,12 @@ public class ConnectionTest {
         // 路径，是否监控，监听器在上面
         List<String> children = zooKeeper.getChildren("/", true);
         children.forEach(System.out::println);
-
-        // 为了能监控，不让进程停止
-        Thread.sleep(Long.MAX_VALUE);
-
     }
 
     // 判断节点是否存在
     @Test
     void nodeIsExist() throws KeeperException, InterruptedException {
-        Stat exists = zooKeeper.exists("/nihao", false);
+        Stat exists = zooKeeper.exists("/hello", false);
         System.out.println("===========exists=============");
         System.out.println(exists);
     }
