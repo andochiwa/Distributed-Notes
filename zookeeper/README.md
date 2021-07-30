@@ -70,3 +70,46 @@ dataDir:        # 保存Zookeeper中的数据
 clientPort=2181 # 客户端连接端口，通常不做修改
 ```
 
+# Zookeeper 集群
+
+## 1. 选举机制
+
+<img src="img/2.png" style="zoom:150%;" />
+
+### 第一次启动
+
+1. Server1 启动，发动一次选举，投自己一票，不够半数以上（3票），选举无法完成，Server1 保持状态为 LOOKING
+2. Server2 启动，再发起一次选举，此时 Server1 发现 Server2 的比目前投票自己推举的服务器（Server1）大，更改选票为 Server2，此时 Server2 拥有两票，选举仍然无法完成，Server1, 2 保持 LOOKING
+3. Server3 启动，再发起一次选举，此时 Server1 和 Server2 都会更改选票为 Server3，Server3 超过半数选为 Leader，Server1, 2 状态改为 Follower
+4. Server4 启动，再发起一次选举，此时 Server1, 2, 3 都不是 LOOKING 状态所以不会更改投票信息，Server4 为 1 票，服从 3 票的 Server3
+5. Server5 启动，结果与 Server4 一样
+
+### 非第一次启动
+
+当 Zookeeper 集群中的一台服务器出现以下两种情况之一时，就会进入 Leader 选举
+
+* 服务器初始化启动
+
+* 服务器运行期间无法和 Leader 保持连接
+
+当另一台服务器进入 Leader 选举流程时，当前集群也可能会处于以下两种情况
+
+* 集群中已存在 Leader
+
+  服务器识图去选举 Leader时，会被告知服务器 Leader 信息，对于该服务器而言，仅仅需要和 Leader 服务器建立连接同步状态即可
+
+* 服务中不存在 Leader
+
+  先说明三个概念：**SID**：服务器 ID，唯一标识，和myid一致
+
+  **ZXID**：事务 ID，标识一次服务器状态的变更
+
+  **Epoch**：每个 Leader 任期的代号
+
+  假设 Zookeeper 五台服务器 SID 分别是1, 2, 3, 4, 5，ZXID 分别是 8, 8, 8, 7, 7，此时 SID 为 3 的 服务器是 Leader，某一时刻 3 和 5 出现了故障，因此开始进行选举
+
+  服务器 1, 2, 4 的投票情况（Epoch, ZXID, SID）：(1, 8, 1), (1, 8, 2), (1, 7, 4)
+
+  规则为：Epoch 大的胜出。Epoch 相同，则 ZXID 大的胜出，否则 SID 大的胜出
+
+  那么我们可以知道，服务器 2 胜出
