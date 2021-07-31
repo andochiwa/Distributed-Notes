@@ -212,3 +212,5 @@ create /servers "servers'
 # Zookeeper 分布式锁
 
 ![](img/7.png)
+
+可以使用成熟的 Zookeeper 分布式锁框架`Curator`
