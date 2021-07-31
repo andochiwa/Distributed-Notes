@@ -208,3 +208,7 @@ create /servers "servers'
 ```
 
 2. 编写服务器以及客户端代码
+
+# Zookeeper 分布式锁
+
+![](img/7.png)
