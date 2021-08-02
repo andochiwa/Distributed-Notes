@@ -238,3 +238,41 @@ Zookeeper 采用半数机制，超过半数的投票通过成为 Leader
 * 100 台以上服务器：11 台 Zk
 
 服务器越多，好处是提高可靠性，坏处是提高通信延迟
+
+# Zookeeper 算法基础
+
+> Zookeeper 如何保证数据一致性？这也是困扰分布式系统框架的一个难题
+
+## 1.  Paxos 算法
+
+一种基于消息传递且具有高度容错特性的一致性算法
+
+解决的问题：快速正确的在一个分布式系统中对某个数据达成一致，并且保证无论发生任何异常，都不会破坏整个系统的一致性
+
+在一个 Paxos 系统中，首先将所有节点划分成 Proposer（提议者），Acceptor（接受者）和 Learner（学习者）。
+
+**一个完整的 Paxos 算法分为以下几个阶段**：
+
+1. Prepare 准备阶段
+   1. Proposer 向多个 Acceptor 发出 Propose 请求 Promise
+   2. Acceptor 针对收到的 Propose 请求进行 Promise
+2. Accept 接受阶段
+   1. Proposer 收到多数 Acceptor 承诺的 Promise 后，向 Acceptor 发出 Propose 请求
+   2. Acceptor 针对收到的 Propose 请求进行 Accept 处理
+3. Learn 学习阶段
+   1. Proposer 将形成的决议发送给所有 Learners
+
+**流程**：
+
+1. Prepare：Proposer 生成全局唯一且递增的 Proposal ID，向所有 Accptor 发送 Propose 请求，这里无需携带提案内容，只携带 Proposal ID 即可
+2. Promise：Accptor 收到 Propose 请求后，做出"两个承诺，一个应答"
+   * 不再接受 Proposal ID **小于等于**当前请求的 Propose 请求
+   * 不再接受 Proposal ID **小于**当前请求的 Accept 请求
+   * 不违背之前做出的承诺下，回复已经 Accept 过的提案中 Proposal ID 最大的那个提案的 Value 和 Proposal ID，没有则返回空值
+3. Propose：Proposer 收到多数的 Acceptor 的 Promise 应答后，从应答中选择 Proposal ID 最大的提案的 Value，作为本次要发起的提案。如果所有应答的提案 Value 均为空值，则可以自己随意决定提案 Value。然后携带当前 Proposal ID，向所有 Acceptor 发送 Propose 请求
+4. Accept：Acceptor 收到 Propose 请求后，在不违背之前做出的承诺下，接受并持久化当前 Proposal ID 和提案 Value
+5. Learn：Proposer 收到多数 Acceptor 的 Accept 后，决议形成，将形成的决议发送给所有 Learner。
+
+Paxos 算法缺陷：在网络复杂的情况下，有可能无法收敛，甚至陷入活锁的情况。系统中有一个以上的 Proposer，多个 Proposer 相互争夺 Acceptor，造成迟迟无法达成一致的情况。
+
+针对这种情况，一种改进的 Paxos 算法被提出：从系统中选出一个节点作为 Leader，只有 Leader 能够发起提案。这样 Paxos 流程中就只会有一个 Proposer，不会出现活锁的情况
