@@ -294,3 +294,22 @@ ZAB 协议包括两种基本模式：消息广播、崩溃恢复
 崩溃恢复：一旦 Leader 服务器出现崩溃或者由于网络原因导致 Leader 服务器失去了与过半 Follower 的联系，就会进入崩溃恢复模式
 
 <img src="img/9.png" style="zoom:150%;" />
+
+<img src="img/10.png" style="zoom:150%;" />
+
+<img src="img/11.png" style="zoom:150%;" />
+
+# CAP 理论
+
+CAP 理论告诉我们，一个分布式系统不可能同时满足以下三种
+
+* 一致性（Consistency）
+* 可用性（Available）
+* 分区容错性（Partition Tolerance）
+
+这三个基本需求只能满足两个，其中**分布式系统**中 P 是必须的，因此往往选择在 CP 或者 AP 中
+
+**Zookeeper 保证的是 CP**，因此
+
+1. Zookeeper 不能保证每次服务请求的可用性
+2. 进行 Leader 选举时集群是不可用的
