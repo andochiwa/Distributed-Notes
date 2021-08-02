@@ -276,3 +276,21 @@ Zookeeper 采用半数机制，超过半数的投票通过成为 Leader
 Paxos 算法缺陷：在网络复杂的情况下，有可能无法收敛，甚至陷入活锁的情况。系统中有一个以上的 Proposer，多个 Proposer 相互争夺 Acceptor，造成迟迟无法达成一致的情况。
 
 针对这种情况，一种改进的 Paxos 算法被提出：从系统中选出一个节点作为 Leader，只有 Leader 能够发起提案。这样 Paxos 流程中就只会有一个 Proposer，不会出现活锁的情况
+
+## 2. ZAB 协议
+
+## 2.1 ZAB 算法
+
+ZAB 借鉴了 Paxos 算法，是特别为 Zookeeper 设计的支持崩溃恢复的原子广播协议。基于该协议，Zookeeper 设计为只有一台服务器（Leader）负责处理外部的写事务请求，然后 Leader 服务器将数据同步到其他 Follower 节点。即 Zookeeper 只有一个 Leader 可以发起提案。
+
+## 2.2 ZAB 协议内容
+
+ZAB 协议包括两种基本模式：消息广播、崩溃恢复
+
+消息广播：
+
+<img src="img/8.png" style="zoom:150%;" />
+
+崩溃恢复：一旦 Leader 服务器出现崩溃或者由于网络原因导致 Leader 服务器失去了与过半 Follower 的联系，就会进入崩溃恢复模式
+
+<img src="img/9.png" style="zoom:150%;" />
